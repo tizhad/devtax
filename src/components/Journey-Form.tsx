@@ -1,72 +1,37 @@
 import React, {useState} from 'react';
 import './Journey-Form.scss';
-import {Errors, FormValues} from "../shared/types";
+import {FormValues} from "../shared/types";
 import {toast, ToastContainer} from 'react-toastify';
+import {formValidation, initialFormValues} from "../utils/form-validation";
 
 function JourneyForm() {
-    const [formValues, setFormValues] = useState<FormValues>({
-        firstName: '',
-        lastName: '',
-        passengerCount: '',
-        phoneNumber: '',
-        from: '',
-        to: '',
-        toAirport: false,
-        dateTime: '',
-    });
+    const [formValues, setFormValues] = useState<FormValues>(initialFormValues
+);
 
-    const [errors, setErrors] = useState<Errors>({});
-    const [message, setMessage] = useState('');
-
+    const [error, setErrorMessage] = useState('');
+    const [isFormValid, setIsFormValid] = useState(false);
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const name:string = event.target.name;
+        const value = event.target.value;
         setFormValues({
             ...formValues,
-            [event.target.name]:
-                event.target.type === 'checkbox'
-                    ? event.target.checked
-                    : event.target.value,
+            [name]: value,
         });
+
+        const result = formValidation(event, formValues);
+
+        if (result.errorMessage) {
+            setErrorMessage(result.errorMessage);
+            setIsFormValid(result.isFormValid);
+        } else {
+            setErrorMessage('');
+            setIsFormValid(true);
+        }
     };
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        const newErrors: Errors = validate(formValues);
-        setErrors(newErrors);
-
-        if (Object.keys(newErrors).length === 0) {
-            setFormValues({
-                firstName: '',
-                lastName: '',
-                passengerCount: '',
-                phoneNumber: '',
-                from: '',
-                to: '',
-                toAirport: false,
-                dateTime: '',
-            });
-            toast.success('Form successfully submitted!');
-        }
-    };
-
-    const validate = (values: FormValues): Errors => {
-        let errors: Errors = {};
-        const fields = [
-            'firstName',
-            'lastName',
-            'passengerCount',
-            'phoneNumber',
-            'from',
-            'to',
-            'dateTime',
-        ];
-
-        fields.forEach((field) => {
-            if (!values[field]) {
-                errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
-            }
-        });
-
-        return errors;
+        toast.success('Form successfully submitted!');
     };
 
     return (
@@ -74,8 +39,8 @@ function JourneyForm() {
             <div className="form">
                 <form onSubmit={handleSubmit} className="form">
                     <h1>Create New Journey</h1>
-                    {Object.keys(errors).length > 0 && (
-                        <p className="error">Please fill in all required fields</p>
+                    {error && (
+                        <p className="error">{error}</p>
                     )}
                     <input
                         placeholder="name"
@@ -96,10 +61,12 @@ function JourneyForm() {
                         type="number"
                         name="passengerCount"
                         value={formValues.passengerCount}
+                        min="1"
+                        max="4"
                         onChange={handleChange}
                     />
                     <input
-                        placeholder="Phone Number"
+                        placeholder="+31101023990"
                         type="tel"
                         name="phoneNumber"
                         value={formValues.phoneNumber}
@@ -135,7 +102,7 @@ function JourneyForm() {
                         value={formValues.dateTime}
                         onChange={handleChange}
                     />
-                    <button type="submit" className="btn">
+                    <button type="submit" className="btn" disabled={!isFormValid}>
                         Submit
                     </button>
                 </form>
