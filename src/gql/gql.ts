@@ -134,7 +134,7 @@ export function graphql(source: string) {
     return (documents as any)[source] ?? {};
 }
 
-export function getAllJournalEntries(): typeof documents['GetAllJourneys'] {
+export function getAllJourneysEntries(): typeof documents['GetAllJourneys'] {
     return documents['GetAllJourneys'] ?? [];
 }
 
