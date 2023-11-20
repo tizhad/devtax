@@ -76,6 +76,18 @@ documents['DeleteJourney'] = gql`
   }
 `;
 
+documents['CompleteJourney'] = gql`
+  mutation CompleteJourney($id: UUID!, $status: String!) {
+    updatejourneyCollection(filter: {id: {eq: $id}}, set: {status: $status}) {
+      affectedCount
+      records {
+        id
+        status
+      }
+    }
+  }
+`;
+
 documents['CreateJourney'] = gql`
   mutation CreateJourney($input: JourneyInsertInput!) {
     insertIntojourneyCollection(objects: [$input]) {
