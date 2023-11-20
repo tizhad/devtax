@@ -1,6 +1,6 @@
 import {useMutation, useQuery} from "@apollo/client";
 import React, {useEffect, useState} from "react";
-import {getAllJournalEntries, getDriverInfo, graphql} from "../../gql";
+import {getAllJourneysEntries, getDriverInfo, graphql} from "../../gql";
 import "./Journeys.scss";
 import JourneyForm from "../../components/Journey-Form";
 import {Journey} from "../../shared/types";
@@ -9,10 +9,10 @@ import {toast, ToastContainer} from "react-toastify";
 import JourneyItem from "../../components/Journey/JourneyItem";
 
 export default function Journeys() {
-    const {loading, error, data} = useQuery(getAllJournalEntries());
+    const {loading, error, data} = useQuery(getAllJourneysEntries());
     const {data: userInfoResult} = useQuery(getDriverInfo());
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const [filteredData, setFilteredData] = useState([]);
+    const [filteredData, setFilteredData] = useState<Array<{ node: Journey }>>([]);
     const [filter, setFilter] = useState('ALL');
     const [deleteJourneyMutation] = useMutation(graphql('DeleteJourney'));
 
@@ -23,12 +23,20 @@ export default function Journeys() {
 
     useEffect(() => {
         if (data && data.journeyCollection && data.journeyCollection.edges) {
-            setFilteredData(data.journeyCollection.edges);
+            const allJourneys = data.journeyCollection.edges;
+            setFilteredData(allJourneys.sort((a: { node: Journey }, b: { node: Journey }) => {
+                return new Date(b.node.created_at).getTime() - new Date(a.node.created_at).getTime();
+            }));
         }
     }, [data]);
 
-    function closeForm() {
+    function closeForm(newJourney?: Journey) {
         setIsFormOpen(false);
+        if (newJourney) {
+            setFilteredData((prevData) => {
+                return [...prevData, {node: newJourney}];
+            });
+        }
     }
 
     async function handleDelete(id: string) {
