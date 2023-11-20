@@ -15,6 +15,8 @@ export default function Journeys() {
     const [filteredData, setFilteredData] = useState<Array<{ node: Journey }>>([]);
     const [filter, setFilter] = useState('ALL');
     const [deleteJourneyMutation] = useMutation(graphql('DeleteJourney'));
+    const [completeJourney] = useMutation(graphql('CompleteJourney'));
+    const [searchTerm, setSearchTerm] = useState('');
 
 
     function onCreate(): void {
@@ -52,6 +54,18 @@ export default function Journeys() {
         }
     }
 
+    async function completed(id: string) {
+        try {
+            await completeJourney({variables: {id, status: 'COMPLETED'}})
+                .then(() => {
+                    toast.success('Journey completed successfully');
+                });
+
+        } catch (error) {
+            toast.error('Failed to delete journey')
+        }
+    }
+
     function filterJourneys(filter: string) {
         setFilter(filter);
         filter == 'ALL'
@@ -61,13 +75,29 @@ export default function Journeys() {
 
     }
 
+    function search(event: React.ChangeEvent<HTMLInputElement>) {
+        setSearchTerm(event.target.value);
+
+        const allJourneys = data.journeyCollection.edges;
+
+        const filtered = allJourneys.filter(({node: journey}: { node: Journey }) => {
+            return (
+                journey.from_address.toLowerCase().includes(event.target.value.toLowerCase()) ||
+                journey.to_address.toLowerCase().includes(event.target.value.toLowerCase()) ||
+                journey.traveller_info.first_name.toLowerCase().includes(event.target.value.toLowerCase()) ||
+                journey.traveller_info.last_name.toLowerCase().includes(event.target.value.toLowerCase())
+            );
+        });
+
+        setFilteredData(filtered);
+    }
+
     if (loading) return <p>Loading...</p>;
     if (error) {
         return (
             <p>Error loading data. Please check the console for details.</p>
         );
     }
-    if (userInfoResult) console.log(userInfoResult);
 
     return (
         <div className="content">
@@ -76,9 +106,16 @@ export default function Journeys() {
                 {filter !== 'ALL' ?
                     <span className="filter"><strong>Filtered By Status: </strong> {filter} </span> : null
                 }
+                <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={search}
+                />
                 <button className="btn" onClick={onCreate}>
                     Create
                 </button>
+
             </div>)}
 
             <div>
@@ -86,12 +123,18 @@ export default function Journeys() {
             </div>
             {filteredData?.length > 0 ? (filteredData.map(({node: journey}: { node: Journey }) => (
                 <div key={journey.id}>
-                    <JourneyItem journey={journey}/>
                     {journey.status === 'CANCELLED' && (
                         <button className="btn btn__delete" onClick={() => handleDelete(journey.id)}>
                             <span>Delete</span>
                         </button>
                     )}
+                    {journey.status === 'IN PROGRESS' && (
+                        <button className="btn btn__completed" onClick={() => completed(journey.id)}>
+                            <span>Complete Ride</span>
+                        </button>
+                    )}
+                    <JourneyItem journey={journey}/>
+
                 </div>
             ))) : (<p>No journeys found</p>)}
             <div className="msg">
