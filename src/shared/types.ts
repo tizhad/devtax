@@ -49,7 +49,9 @@ export interface FormValues {
 }
 
 export enum FilterType {
-    Pending = 'Pending',
-    Completed = 'Completed',
-    All = 'All'
+    PENDING = 'PENDING',
+    COMPLETED = 'COMPLETED',
+    CANCELLED = 'CANCELLED',
+    IN_PROGRESS = 'IN PROGRESS',
+    ALL = 'ALL'
 }
