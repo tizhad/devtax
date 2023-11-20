@@ -1,5 +1,6 @@
 import React from "react";
 import {Journey} from "../../shared/types";
+import formattedDate from "../../utils/date-formatter";
 
 interface JourneyItemProps {
     journey: Journey;
@@ -8,14 +9,13 @@ interface JourneyItemProps {
 export function JourneyItem({journey}: JourneyItemProps) {
     return (
         <div className="journey">
+            <p> {formattedDate(journey.created_at)}</p>
             <h2>
                 {journey.from_address} to {journey.to_address}
             </h2>
             <p>Fare: {journey.fare}</p>
             <span className="status">{journey.status}</span>
-
             <p>Inbound: {journey.inbound ? "Yes" : "No"}</p>
-            <p>Created At: {journey.created_at}</p>
             <h3>Traveller Info:</h3>
             <p>
                 Name: {journey.traveller_info.first_name}{" "}
