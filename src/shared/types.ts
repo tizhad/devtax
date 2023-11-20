@@ -16,6 +16,7 @@ export interface Journey {
     to_address: string;
     from_address: string;
     traveller_info: TravellerInfo;
+    status: string;
 }
 
 interface JourneyEdge {
@@ -46,6 +47,9 @@ export interface FormValues {
 
     [key: string]: string | boolean;
 }
-export interface Errors {
-    [key: string]: string;
+
+export enum FilterType {
+    Pending = 'Pending',
+    Completed = 'Completed',
+    All = 'All'
 }
