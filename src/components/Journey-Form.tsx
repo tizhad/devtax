@@ -3,16 +3,21 @@ import './Journey-Form.scss';
 import {FormValues} from "../shared/types";
 import {toast, ToastContainer} from 'react-toastify';
 import {formValidation, initialFormValues} from "../utils/form-validation";
+import {graphql} from "../gql";
+import {useMutation} from "@apollo/client";
 
-function JourneyForm() {
-    const [formValues, setFormValues] = useState<FormValues>(initialFormValues
-);
-
-    const [error, setErrorMessage] = useState('');
+function JourneyForm({onClose}: { onClose: () => void }) {
+    const [formValues, setFormValues] = useState<FormValues>(initialFormValues);
+    const [createJourney, {loading, error}] = useMutation(graphql('CreateJourney'));
+    const [createTraveller] = useMutation(graphql('CreateTraveller'));
+    const [errorMsg, setErrorMessage] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const name:string = event.target.name;
-        const value = event.target.value;
+        const name: string = event.target.name;
+        const value = event.target.type === 'checkbox'
+            ? event.target.checked
+            : event.target.value;
+
         setFormValues({
             ...formValues,
             [name]: value,
@@ -29,8 +34,37 @@ function JourneyForm() {
         }
     };
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+        try {
+            const travellerResult = await createTraveller({
+                variables: {
+                    input: {
+                        first_name: formValues.firstName,
+                        last_name: formValues.lastName,
+                        flight_number: 'KL123',
+                        passenger_count: parseInt(formValues.passengerCount),
+                        phone_number: formValues.phoneNumber,
+                        created_at: formValues.dateTime,
+                    },
+                },
+            });
+            onClose();
+            const travellerUuid = travellerResult.data.insertIntotraveller_infoCollection.records[0].id;
+            const journeyResult = await createJourney({
+                variables: {
+                    input: {
+                        fare: 100,
+                        inbound: formValues.toAirport,
+                        from_address: formValues.from,
+                        to_address: formValues.to,
+                        traveller_info: travellerUuid,
+                    },
+                },
+            });
+        } catch (error) {
+            toast.error('Error submitting form!')
+        }
         toast.success('Form successfully submitted!');
     };
 
@@ -40,7 +74,7 @@ function JourneyForm() {
                 <form onSubmit={handleSubmit} className="form">
                     <h1>Create New Journey</h1>
                     {error && (
-                        <p className="error">{error}</p>
+                        <p className="error">{errorMsg}</p>
                     )}
                     <input
                         placeholder="name"
@@ -102,9 +136,16 @@ function JourneyForm() {
                         value={formValues.dateTime}
                         onChange={handleChange}
                     />
-                    <button type="submit" className="btn" disabled={!isFormValid}>
-                        Submit
-                    </button>
+                    <div>
+                        <button type="submit" className="btn"
+                                disabled={!isFormValid}>
+                            Submit
+                        </button>
+                        <button type="button" className="btn" onClick={onClose}>
+                            Cancel
+                        </button>
+                    </div>
+
                 </form>
             </div>
             <div className="msg">

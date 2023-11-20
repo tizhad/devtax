@@ -3,7 +3,7 @@ $gray: #333;
 $blue: #0367a6;
 $lightblue: #008997;
 $error: #e32a36;
-$top:24px;
+$top: 24px;
 
 .form {
   background-color: var(--white);
@@ -53,6 +53,13 @@ $top:24px;
 
 .btn:focus {
   outline: none;
+}
+
+.btn__delete {
+  color: red;
+  background-color: #eab4bc;
+  float: right;
+  width: fit-content;
 }
 
 .btn:disabled {

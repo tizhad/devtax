@@ -68,6 +68,14 @@ documents['GetDriverInfo'] = gql`
   }
 `;
 
+documents['DeleteJourney'] = gql`
+  mutation DeleteJourney($id: UUID!) {
+    deleteFromjourneyCollection(filter: {id: {eq: $id}}) {
+      affectedCount
+    }
+  }
+`;
+
 documents['CreateJourney'] = gql`
   mutation CreateJourney($input: JourneyInsertInput!) {
     insertIntojourneyCollection(objects: [$input]) {
