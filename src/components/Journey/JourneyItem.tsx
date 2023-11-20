@@ -9,13 +9,13 @@ interface JourneyItemProps {
 export function JourneyItem({journey}: JourneyItemProps) {
     return (
         <div className="journey">
-            <p> {formattedDate(journey.created_at)}</p>
+            <p> {formattedDate(journey.created_at)} - <span className="status"> {journey.status}</span></p>
             <h2>
-                {journey.from_address} to {journey.to_address}
+                {journey.from_address} to {journey.to_address} {journey.inbound ?
+                <strong><span>- To Airport</span></strong> : <span> - Inner City</span>}
             </h2>
             <p>Fare: {journey.fare}</p>
-            <span className="status">{journey.status}</span>
-            <p>Inbound: {journey.inbound ? "Yes" : "No"}</p>
+
             <h3>Traveller Info:</h3>
             <p>
                 Name: {journey.traveller_info.first_name}{" "}
