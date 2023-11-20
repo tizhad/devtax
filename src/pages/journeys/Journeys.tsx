@@ -1,27 +1,56 @@
-import {useQuery} from "@apollo/client";
-import React, {useState} from "react";
-import {getAllJournalEntries, getDriverInfo} from "../../gql";
+import {useMutation, useQuery} from "@apollo/client";
+import React, {useEffect, useState} from "react";
+import {getAllJournalEntries, getDriverInfo, graphql} from "../../gql";
 import "./Journeys.scss";
 import JourneyForm from "../../components/Journey-Form";
 import {Journey} from "../../shared/types";
 import Dropdown from "../../components/Dropdown/Dropdown";
+import {toast, ToastContainer} from "react-toastify";
+import JourneyItem from "../../components/Journey/JourneyItem";
 
 export default function Journeys() {
     const {loading, error, data} = useQuery(getAllJournalEntries());
     const {data: userInfoResult} = useQuery(getDriverInfo());
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [filteredData, setFilteredData] = useState([]);
+    const [filter, setFilter] = useState('ALL');
+    const [deleteJourneyMutation] = useMutation(graphql('DeleteJourney'));
+
 
     function onCreate(): void {
         setIsFormOpen(true);
     }
 
+    useEffect(() => {
+        if (data && data.journeyCollection && data.journeyCollection.edges) {
+            setFilteredData(data.journeyCollection.edges);
+        }
+    }, [data]);
+
     function closeForm() {
         setIsFormOpen(false);
     }
 
+    async function handleDelete(id: string) {
+        try {
+            await deleteJourneyMutation({variables: {id}})
+                .then(() => {
+                    setFilteredData(filteredData.filter(({node: journey}: { node: Journey }) => journey.id !== id));
+                    toast.success('Journey deleted successfully');
+                });
+
+        } catch (error) {
+            toast.error('Failed to delete journey')
+        }
+    }
+
     function filterJourneys(filter: string) {
-        if (filter === 'All') return data.journeyCollection.edges;
-        return data.journeyCollection.edges.filter((journey: Journey) => journey.status === filter);
+        setFilter(filter);
+        filter == 'ALL'
+            ? setFilteredData(data.journeyCollection.edges)
+            : setFilteredData(data.journeyCollection.edges
+                .filter(({node: journey}: { node: Journey }) => journey.status === filter))
+
     }
 
     if (loading) return <p>Loading...</p>;
@@ -36,35 +65,30 @@ export default function Journeys() {
         <div className="content">
             {!isFormOpen && (<div className="functions">
                 <Dropdown handleChange={filterJourneys}></Dropdown>
+                {filter !== 'ALL' ?
+                    <span className="filter"><strong>Filtered By Status: </strong> {filter} </span> : null
+                }
                 <button className="btn" onClick={onCreate}>
                     Create
                 </button>
             </div>)}
+
             <div>
                 {isFormOpen && <JourneyForm onClose={closeForm}></JourneyForm>}
             </div>
-            {data.journeyCollection.edges.map(({node: journey}: { node: Journey }) => (
-                <div key={journey.id} className="journey">
-                    <h2>
-                        {journey.from_address} to {journey.to_address}
-                    </h2>
-                    <p>Fare: {journey.fare}</p>
-                    <span className="status">{journey.status}</span>
-
-                    <p>Inbound: {journey.inbound ? "Yes" : "No"}</p>
-                    <p>Created At: {journey.created_at}</p>
-                    <h3>Traveller Info:</h3>
-                    <p>
-                        Name: {journey.traveller_info.first_name}{" "}
-                        {journey.traveller_info.last_name}
-                    </p>
-                    <p>Flight Number: {journey.traveller_info.flight_number}</p>
-                    <p>
-                        Passenger Count: {journey.traveller_info.passenger_count}
-                    </p>
-                    <p>Phone Number: {journey.traveller_info.phone_number}</p>
+            {filteredData?.length > 0 ? (filteredData.map(({node: journey}: { node: Journey }) => (
+                <div key={journey.id}>
+                    <JourneyItem journey={journey}/>
+                    {journey.status === 'CANCELLED' && (
+                        <button className="btn btn__delete" onClick={() => handleDelete(journey.id)}>
+                            <span>Delete</span>
+                        </button>
+                    )}
                 </div>
-            ))}
+            ))) : (<p>No journeys found</p>)}
+            <div className="msg">
+                <ToastContainer/>
+            </div>
         </div>
     );
 }
