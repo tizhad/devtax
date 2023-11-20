@@ -1,9 +1,10 @@
 import {useQuery} from "@apollo/client";
 import React, {useState} from "react";
-import {Journey} from "../../gql/graphql";
 import {getAllJournalEntries, getDriverInfo} from "../../gql";
 import "./Journeys.scss";
 import JourneyForm from "../../components/Journey-Form";
+import {Journey} from "../../shared/types";
+import Dropdown from "../../components/Dropdown/Dropdown";
 
 export default function Journeys() {
     const {loading, error, data} = useQuery(getAllJournalEntries());
@@ -11,8 +12,16 @@ export default function Journeys() {
     const [isFormOpen, setIsFormOpen] = useState(false);
 
     function onCreate(): void {
-        console.log("create");
         setIsFormOpen(true);
+    }
+
+    function closeForm() {
+        setIsFormOpen(false);
+    }
+
+    function filterJourneys(filter: string) {
+        if (filter === 'All') return data.journeyCollection.edges;
+        return data.journeyCollection.edges.filter((journey: Journey) => journey.status === filter);
     }
 
     if (loading) return <p>Loading...</p>;
@@ -25,20 +34,23 @@ export default function Journeys() {
 
     return (
         <div className="content">
-            <div>
-                <button className="button" onClick={onCreate}>
+            {!isFormOpen && (<div className="functions">
+                <Dropdown handleChange={filterJourneys}></Dropdown>
+                <button className="btn" onClick={onCreate}>
                     Create
                 </button>
-            </div>
+            </div>)}
             <div>
-                {isFormOpen && <JourneyForm></JourneyForm>}
+                {isFormOpen && <JourneyForm onClose={closeForm}></JourneyForm>}
             </div>
-            {!isFormOpen && data.journeyCollection.edges.map(({node: journey}: { node: Journey }) => (
+            {data.journeyCollection.edges.map(({node: journey}: { node: Journey }) => (
                 <div key={journey.id} className="journey">
                     <h2>
                         {journey.from_address} to {journey.to_address}
                     </h2>
                     <p>Fare: {journey.fare}</p>
+                    <span className="status">{journey.status}</span>
+
                     <p>Inbound: {journey.inbound ? "Yes" : "No"}</p>
                     <p>Created At: {journey.created_at}</p>
                     <h3>Traveller Info:</h3>
