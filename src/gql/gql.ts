@@ -1,6 +1,5 @@
 /* eslint-disable */
-import * as types from "./graphql";
-import {TypedDocumentNode, TypedDocumentNode as DocumentNode} from "@graphql-typed-document-node/core";
+import {TypedDocumentNode} from "@graphql-typed-document-node/core";
 import {gql} from "@apollo/client";
 
 const documents: Record<string, TypedDocumentNode<any, any>> = {};
@@ -16,6 +15,7 @@ documents['GetAllJourneys'] = gql`
           fare
           inbound
           created_at
+          status
           traveller_info {
             id
             first_name
@@ -67,6 +67,48 @@ documents['GetDriverInfo'] = gql`
     }
   }
 `;
+
+documents['CreateJourney'] = gql`
+  mutation CreateJourney($input: JourneyInsertInput!) {
+    insertIntojourneyCollection(objects: [$input]) {
+      affectedCount
+      records {
+        id
+        from_address
+        to_address
+        fare
+        inbound
+        created_at
+        status
+        traveller_info {
+          first_name
+          last_name
+          flight_number
+          passenger_count
+          phone_number
+          id
+        }
+      }
+    }
+  }
+`;
+
+documents['CreateTraveller'] = gql`
+  mutation CreateTraveller($input: Traveller_InfoInsertInput!) {
+    insertIntotraveller_infoCollection(objects: [$input]) {
+      affectedCount
+      records {
+        first_name
+        last_name
+        flight_number
+        passenger_count
+        phone_number
+        id
+      }
+    }
+  }
+`;
+
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  *
@@ -79,24 +121,17 @@ documents['GetDriverInfo'] = gql`
  * The query argument is unknown!
  * Please regenerate the types.
  */
-// export function graphql(source: string) {
-//   return documents[source] ?? {};
-// }
 
 export function graphql(source: string) {
-  return (documents as any)[source] ?? {};
+    return (documents as any)[source] ?? {};
 }
 
 export function getAllJournalEntries(): typeof documents['GetAllJourneys'] {
-  return documents['GetAllJourneys'] ?? [];
+    return documents['GetAllJourneys'] ?? [];
 }
 
-export function getAllDrivers(): typeof documents['GetAllDrivers'] {
-  return documents['GetAllDrivers'] ?? [];
-}
 export function getDriverInfo(): typeof documents['GetDriverInfo'] {
-  return documents['GetDriverInfo'] ?? [];
+    return documents['GetDriverInfo'] ?? [];
 }
-
 export type DocumentType<TDocumentNode extends TypedDocumentNode<any, any>> =
     TDocumentNode extends TypedDocumentNode<infer TType, any> ? TType : never;
