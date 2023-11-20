@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import './Journey-Form.scss';
 import {FormValues, Journey} from "../shared/types";
 import {toast, ToastContainer} from 'react-toastify';
-import {formValidation, initialFormValues} from "../utils/form-validation";
+import {initialFormValues} from "../utils/form-validation";
 import {graphql} from "../gql";
 import {useMutation} from "@apollo/client";
 
@@ -14,22 +14,25 @@ function JourneyForm({onClose}: { onClose: (newJourney?: Journey) => void }) {
     const [isFormValid, setIsFormValid] = useState(false);
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const name: string = event.target.name;
-        const value = event.target.type === 'checkbox'
-            ? event.target.checked
-            : event.target.value;
-
         setFormValues({
             ...formValues,
-            [name]: value,
+            [name]: event.target.value,
         });
-
-        const result = formValidation(event, formValues);
-
-        if (result.errorMessage) {
-            setErrorMessage(result.errorMessage);
-            setIsFormValid(result.isFormValid);
-        } else {
+        if (name === 'passengerCount') {
+            if (parseInt(event.target.value) < 1 || parseInt(event.target.value) > 4) {
+                setErrorMessage('Passenger count must be between 1 and 4');
+                return;
+            }
             setErrorMessage('');
+        }
+        if (name === 'toAirport') {
+            formValues.toAirport = event.target.checked;
+        }
+        setFormValues({
+            ...formValues,
+            [name]: event.target.value,
+        });
+        if(!errorMsg && Object.values(formValues).every((val) => val !== '')) {
             setIsFormValid(true);
         }
     };
@@ -73,7 +76,7 @@ function JourneyForm({onClose}: { onClose: (newJourney?: Journey) => void }) {
             <div className="form">
                 <form onSubmit={handleSubmit} className="form">
                     <h1>Create New Journey</h1>
-                    {error && (
+                    {errorMsg && (
                         <p className="error">{errorMsg}</p>
                     )}
                     <input
@@ -137,7 +140,7 @@ function JourneyForm({onClose}: { onClose: (newJourney?: Journey) => void }) {
                         onChange={handleChange}
                     />
                     <div>
-                        <button type="submit" className="btn"
+                        <button type="submit" className="btn btn__active"
                                 disabled={!isFormValid}>
                             Submit
                         </button>
