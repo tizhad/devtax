@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import './Journey-Form.scss';
-import {FormValues} from "../shared/types";
+import {FormValues, Journey} from "../shared/types";
 import {toast, ToastContainer} from 'react-toastify';
 import {formValidation, initialFormValues} from "../utils/form-validation";
 import {graphql} from "../gql";
 import {useMutation} from "@apollo/client";
 
-function JourneyForm({onClose}: { onClose: () => void }) {
+function JourneyForm({onClose}: { onClose: (newJourney?: Journey) => void }) {
     const [formValues, setFormValues] = useState<FormValues>(initialFormValues);
     const [createJourney, {loading, error}] = useMutation(graphql('CreateJourney'));
     const [createTraveller] = useMutation(graphql('CreateTraveller'));
@@ -49,7 +49,6 @@ function JourneyForm({onClose}: { onClose: () => void }) {
                     },
                 },
             });
-            onClose();
             const travellerUuid = travellerResult.data.insertIntotraveller_infoCollection.records[0].id;
             const journeyResult = await createJourney({
                 variables: {
@@ -62,6 +61,7 @@ function JourneyForm({onClose}: { onClose: () => void }) {
                     },
                 },
             });
+            journeyResult ? onClose(journeyResult.data.insertIntojourneyCollection.records[0]) : onClose();
         } catch (error) {
             toast.error('Error submitting form!')
         }
@@ -141,7 +141,9 @@ function JourneyForm({onClose}: { onClose: () => void }) {
                                 disabled={!isFormValid}>
                             Submit
                         </button>
-                        <button type="button" className="btn" onClick={onClose}>
+                        <button type="button" className="btn" onClick={() => {
+                            onClose()
+                        }}>
                             Cancel
                         </button>
                     </div>
