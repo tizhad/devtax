@@ -4,7 +4,6 @@ $white: #fff;
 .list {
   position: absolute;
   margin: 0 0 0 10px;
-  width: fit-content;
   box-shadow: #e3d7d7 1px 1px 0 0;
   border-radius: 5px;
   padding: 16px;
@@ -17,13 +16,19 @@ $white: #fff;
   background-color: $white;
   padding-inline-start: 8px;
   z-index: 99999999;
+  width: fit-content;
+
   &:hover {
     cursor: pointer;
   }
 }
 
 .list > ul > li {
-  width: 30%;
+  width: 100%;
   margin: 8px;
-  border-bottom: 1px solid #ccc;
+  line-height: 1.5rem;
+  text-transform: lowercase;
+  &::first-letter {
+    text-transform: uppercase;
+  }
 }
