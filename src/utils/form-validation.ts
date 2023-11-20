@@ -21,7 +21,7 @@ export function formValidation(event: React.ChangeEvent<HTMLInputElement>, formV
         result.isFormValid = false;
     }
     if (event.target.name === 'toAirport') {
-        result.toAirportValue = !result.toAirportValue;
+        result.toAirportValue = event.target.checked;
     }
     return result;
 }
