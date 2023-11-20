@@ -34,7 +34,7 @@ export default function Journeys() {
         setIsFormOpen(false);
         if (newJourney) {
             setFilteredData((prevData) => {
-                return [...prevData, {node: newJourney}];
+                return [{node: newJourney}, ...prevData];
             });
         }
     }
