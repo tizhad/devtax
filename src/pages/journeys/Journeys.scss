@@ -4,22 +4,17 @@ $default-padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: $default-padding;
-
-  .button {
-    float: right;
-    font-size: 18px;
-    cursor: pointer;
-    color: black;
-    padding: 18px 32px;
-    font-weight: 500;
-    line-height: 18px;
-    border-radius: 8px;
-    border: 1px solid #2E2E2E;
-
-    &:hover {
-      background-color: #2E2E2E;
-      color: white;
-    }
+  padding: $default-padding $default-padding 0 $default-padding;
+  .functions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
   }
+}
+
+.status {
+  background-color: #d6d6ee;
+  font-style: italic;
+  font-weight: bold;
 }
