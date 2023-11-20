@@ -31,7 +31,7 @@ $top: 24px;
 }
 
 .btn {
-  border-radius: 19px;
+  border-radius: 18px;
   border: 1px solid $white;
   color: black;
   cursor: pointer;
@@ -54,12 +54,20 @@ $top: 24px;
 .btn:focus {
   outline: none;
 }
-
 .btn__delete {
-  color: red;
-  background-color: #eab4bc;
+  color: white;
+  background-color: #f80606;
   float: right;
   width: fit-content;
+  margin: 16px;
+}
+
+.btn__completed {
+  color: white;
+  background-color: #1eaf05;
+  float: right;
+  width: fit-content;
+  margin: 16px;
 }
 
 .btn:disabled {

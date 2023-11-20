@@ -5,6 +5,7 @@ $default-padding: 24px;
   flex-direction: column;
   justify-content: center;
   padding: $default-padding $default-padding 0 $default-padding;
+
   .functions {
     display: flex;
     justify-content: space-between;
@@ -18,7 +19,16 @@ $default-padding: 24px;
   font-style: italic;
   font-weight: bold;
 }
+
 .filter {
-    margin-left: 18px;
-    color: #0367a6;
+  margin-left: 18px;
+  color: #0367a6;
+}
+
+.search {
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+  padding: 0.9rem 0.9rem;
+  margin: 0.5rem 0;
 }
