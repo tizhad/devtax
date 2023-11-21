@@ -1,4 +1,4 @@
-# TAXi-frontend
+### TAXi-frontend
 This application is a web application built with React and TypeScript that allows users to
 - **View Journey**: Users can easily view the details of their journeys, providing them with all the necessary information at their fingertips.
 - **Complete and Delete Journey**: The application allows users to mark their journeys as complete once they've reached their destination.
