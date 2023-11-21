@@ -1,4 +1,4 @@
-# Transferz
+# TAXi-frontend
 This application is a web application built with React and TypeScript that allows users to
 - see the journey
 - complete and delete journey
