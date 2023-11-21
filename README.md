@@ -1,11 +1,10 @@
 # TAXi-frontend
 This application is a web application built with React and TypeScript that allows users to
-- see the journey
-- complete and delete journey
-- create new journey
-- create and manage journeys.
+- **View Journey**: Users can easily view the details of their journeys, providing them with all the necessary information at their fingertips.
+- **Complete and Delete Journey**: The application allows users to mark their journeys as complete once they've reached their destination.
+- Additionally, users have the flexibility to delete cancelled journey from their list.
+- **Create New Journey**: Users can plan new journeys using a simple and intuitive interface.
 
-The application uses GraphQL for data fetching and mutations.
 
 ## Getting Started
 ### Installing
