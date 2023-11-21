@@ -1,8 +1,8 @@
 import {useMutation, useQuery} from "@apollo/client";
 import React, {useEffect, useState} from "react";
-import {getAllJourneysEntries, getDriverInfo, graphql} from "../../gql";
+import {getAllJourneysEntries, graphql} from "../../gql";
 import "./Journeys.scss";
-import JourneyForm from "../../components/Journey-Form";
+import JourneyForm from "../../components/Form/Journey-Form";
 import {Journey} from "../../shared/types";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import {toast, ToastContainer} from "react-toastify";
@@ -10,7 +10,6 @@ import JourneyItem from "../../components/Journey/JourneyItem";
 
 export default function Journeys() {
     const {loading, error, data} = useQuery(getAllJourneysEntries());
-    const {data: userInfoResult} = useQuery(getDriverInfo());
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [filteredData, setFilteredData] = useState<Array<{ node: Journey }>>([]);
     const [filter, setFilter] = useState('ALL');

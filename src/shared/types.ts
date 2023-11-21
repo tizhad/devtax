@@ -10,7 +10,6 @@ export interface TravellerInfo {
 export interface Journey {
     id: string;
     fare: number;
-    hubType: string;
     inbound: boolean;
     created_at: string;
     to_address: string;

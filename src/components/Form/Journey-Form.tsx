@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import './Journey-Form.scss';
-import {FormValues, Journey} from "../shared/types";
+import {FormValues, Journey} from "../../shared/types";
 import {toast, ToastContainer} from 'react-toastify';
-import {initialFormValues} from "../utils/form-validation";
-import {graphql} from "../gql";
+import {initialFormValues} from "../../utils/form-validation";
+import {graphql} from "../../gql";
 import {useMutation} from "@apollo/client";
 
 function JourneyForm({onClose}: { onClose: (newJourney?: Journey) => void }) {
@@ -12,6 +12,8 @@ function JourneyForm({onClose}: { onClose: (newJourney?: Journey) => void }) {
     const [createTraveller] = useMutation(graphql('CreateTraveller'));
     const [errorMsg, setErrorMessage] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
+
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const name: string = event.target.name;
         setFormValues({
