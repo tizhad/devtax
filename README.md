@@ -1,21 +1,35 @@
-# Welcome to Transferz Frontend Assignment
+# Transferz
+This application is a web application built with React and TypeScript that allows users to
+- see the journey
+- complete and delete journey
+- create new journey
+- create and manage journeys.
 
-In this repository you will find a boilerplate for a client application created with React, Typescript and scss. Use the API provided to fetch a list of journeys and display it on the page. The assignment should take less than 2 hours to complete - don't overcomplicate things and KISS. Feel free to add TODO's to the code.
+The application uses GraphQL for data fetching and mutations.
 
-## Instructions
-[Read instructions](https://github.com/transferz/fe-test/blob/main/INSTRUCTIONS.md)
+## Getting Started
+### Installing
 
-## Available Scripts
+1. Clone the repository to your local machine.
+2. Navigate to the project directory.
+3. Run `npm install` to install all the dependencies.
 
-In the project directory, you can run:
+Run `npm install` to install all dependencies.
+
+### Some Dependencies
+
+- Node.js
+- npm
+- React
+- TypeScript
+- Apollo Client
+- GraphQL
 
 ### `npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
 ### `npm test`
 
